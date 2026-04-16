@@ -1,0 +1,12 @@
+{
+  "accelerator": "b200",
+  "run_name": "kaggle_howa_b200_run2",
+  "epochs": 6,
+  "batch_size": 128,
+  "lr": 0.001,
+  "num_workers": 4,
+  "unfreeze_all": false,
+  "checkpoint_volume_path": "kaggle_howa_b200_run2/best_model.pth",
+  "evaluation_volume_path": "kaggle_howa_b200_run2/evaluation.txt",
+  "train_log_volume_path": "kaggle_howa_b200_run2/train.log"
+}

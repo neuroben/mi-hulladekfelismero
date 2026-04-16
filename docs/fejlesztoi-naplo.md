@@ -47,14 +47,22 @@ A projekt későbbi szakaszában még tovább bővítettem a képhalmazt a Kaggl
 
 Az alkalmazás alapja egy előtanított `ResNet18` modell lett. A tanítást transfer learning megközelítéssel oldottam meg, vagyis nem nulláról tanítottam egy teljes hálózatot, hanem egy már előtanított képfelismerő modellt finomhangoltam a saját négy hulladékosztályomra.
 
-Lokálisan is futtattam rövidebb próbákat, de amikor már nagyobb dataset állt rendelkezésre, regisztráltam a Modalra, beállítottam az API tokent, feltöltöttem a datasetet egy tartós Volume-ba, és ott GPU-n futtattam a tréninget. Ez azért volt hasznos, mert a CPU-s tanítás a saját gépemen érezhetően lassabb volt, míg Modalon egy L4 GPU-val sokkal gyorsabban végig tudtam menni ugyanazon a folyamaton.
+Lokálisan is futtattam rövidebb próbákat, de amikor már nagyobb dataset állt rendelkezésre, regisztráltam a Modalra, beállítottam az API tokent, feltöltöttem a datasetet egy tartós Volume-ba, és ott GPU-n futtattam a tréninget. Ez azért volt hasznos, mert a CPU-s tanítás a saját gépemen érezhetően lassabb volt, míg Modalon egy L4 GPU-val sokkal gyorsabban végig tudtam menni ugyanazon a folyamaton. A későbbi szakaszban a még erősebb B200 GPU-t is kipróbáltam ugyanennek a projektnek a tanítására.
 
-A jelenlegi legfontosabb futásom:
+A korábbi, HOWA-bővítés utáni fontos Modalos futásom:
 
 - Modal L4 GPU
 - `6` epoch
 - `batch_size = 64`
 - `learning_rate = 0.001`
+
+A legfrissebb, kibővített képhalmazon futtatott erősebb GPU-s köröm pedig ez lett:
+
+- Modal B200 GPU
+- `6` epoch
+- `batch_size = 128`
+- `learning_rate = 0.001`
+- run név: `kaggle_howa_b200_run2`
 
 ## Milyen eredményt értem el
 
@@ -65,7 +73,32 @@ A HOWA-bővítés utáni Modalos tanításnál ezeket az eredményeket értem el
 
 Az osztályonkénti eredmények közül a `paper` kategória teljesített a legerősebben, míg az `glass` és `plastic` között még most is látszik némi átfedés, ami a valós tárgyformák és az áttetsző anyagok miatt érthető. A modell tehát már használható, de még nem tekintem késznek vagy ipari szintűnek.
 
+<<<<<<< HEAD
 A Kaggle Garbage Classification V2 képeinek hozzáadása után a dataset még tovább bővült, de erre a véglegesített, nagyobb adathalmazra új tréninget még nem futtattam. Emiatt a jelenleg dokumentált pontossági értékek a HOWA-val kibővített állapothoz tartoznak, nem a legfrissebb, `14528` képes verzióhoz.
+=======
+A Kaggle Garbage Classification V2 képeinek hozzáadása után a dataset még tovább bővült, és erre a nagyobb, `14528` képes adathalmazra már lefuttattam egy új Modalos tanítást B200 GPU-n is. Ennél a legfrissebb körnél ezeket az eredményeket értem el:
+
+- legjobb validációs pontosság: `0.8161`
+- tesztpontosság: `0.8069`
+
+## A két modell összehasonlítása
+
+A két legerősebb futásom végül így alakult:
+
+- `howa_modal_run1`:
+  HOWA-val bővített dataset (`8929` kép), Modal `L4`, `batch_size = 64`, legjobb `val_acc = 0.8059`, `test_acc = 0.8161`, teszthalmaz = `995` kép
+- `kaggle_howa_b200_run2`:
+  HOWA + Kaggle V2 alapján kibővített dataset (`14528` kép), Modal `B200`, `batch_size = 128`, legjobb `val_acc = 0.8161`, `test_acc = 0.8069`, teszthalmaz = `1838` kép
+
+Ebből az látszik, hogy a B200-as futás már a nagyobb, nehezebb és változatosabb adathalmazon ment, ezért nem teljesen egy az egyben összehasonlítható a korábbi L4-es körrel. A gyorsító elsősorban a sebességen segít, de a végeredményt ugyanúgy erősen befolyásolja az adatösszetétel, a split, a batch méret és a hiperparaméterezés. A mostani mérésem alapján az L4-es modell picit magasabb tesztpontosságot adott, viszont ezt egy kisebb, `995` képes teszthalmazon mértem. A B200-as modell ezzel szemben majdnem ugyanilyen szintet hozott egy jóval nagyobb, `1838` képes teszthalmazon, ami szerintem kifejezetten biztató eredmény.
+
+Osztályszinten is érdekes a különbség:
+
+- az L4-es modell `metal` osztályban erősebb maradt, és összesített tesztpontosságban is enyhén előrébb végzett;
+- a B200-as, kibővített képes futásnál a `paper` továbbra is nagyon stabil maradt (`f1 = 0.89`);
+- a B200-as modell `glass` osztályban kissé jobb F1-t adott (`0.79` az `0.78` helyett), miközben `plastic` és `metal` oldalon valamivel vegyesebb lett a kép;
+- ebből arra következtetek, hogy a nagyobb dataset és az erősebb GPU jó irány, de a kibővített adathalmazhoz még érdemes külön hiperparaméter-hangolást is végezni.
+>>>>>>> main-with-dataset
 
 ## Milyen GUI készült hozzá
 

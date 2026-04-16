@@ -126,6 +126,14 @@ Run Modal training:
 python -m modal run modal_train.py --accelerator l4 --epochs 6 --batch-size 64 --run-name howa_modal_run1
 ```
 
+Try the stronger single-GPU option on the larger dataset:
+
+```powershell
+python -m modal run modal_train.py --accelerator b200 --epochs 6 --batch-size 64 --run-name kaggle_howa_b200_run1
+```
+
+The current trainer is prepared for a single `B200`. It is not a multi-GPU training setup, so `B200:8` is not exposed yet.
+
 Legacy commands such as `python src\train.py` and `python app\app.py` still work.
 
 ## Dataset
