@@ -21,14 +21,6 @@ build/
 models/*.pth
 models/*.pt
 
-# Dataset images (keep folder structure via .gitkeep)
-dataset/train/*/*
-!dataset/train/*/.gitkeep
-dataset/val/*/*
-!dataset/val/*/.gitkeep
-dataset/test/*/*
-!dataset/test/*/.gitkeep
-
 # OS artefacts
 .DS_Store
 Thumbs.db
