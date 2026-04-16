@@ -52,6 +52,12 @@ COLORS = {
     "eval": "\033[36m",
 }
 
+ACCELERATOR_LABELS = {
+    "t4": "T4",
+    "l4": "L4",
+    "b200": "B200",
+}
+
 
 def log(message: str, kind: str = "info") -> None:
     timestamp = datetime.now().strftime("%H:%M:%S")
@@ -240,6 +246,35 @@ def train_l4(
     )
 
 
+@app.function(
+    image=image,
+    gpu="B200",
+    cpu=4,
+    timeout=60 * 60,
+    volumes={
+        "/mnt/dataset": dataset_volume.read_only(),
+        "/mnt/models": models_volume,
+    },
+)
+def train_b200(
+    run_name: str,
+    epochs: int,
+    batch_size: int,
+    lr: float,
+    num_workers: int,
+    unfreeze_all: bool,
+) -> dict:
+    return train_impl(
+        accelerator="b200",
+        run_name=run_name,
+        epochs=epochs,
+        batch_size=batch_size,
+        lr=lr,
+        num_workers=num_workers,
+        unfreeze_all=unfreeze_all,
+    )
+
+
 def sync_dataset_volume(force_overwrite: bool = True) -> None:
     if not LOCAL_DATASET_DIR.exists():
         raise FileNotFoundError(f"Local dataset folder not found: {LOCAL_DATASET_DIR}")
@@ -293,11 +328,14 @@ def main(
     download_artifacts: bool = True,
 ) -> None:
     accelerator_name = accelerator.lower()
-    if accelerator_name not in {"t4", "l4"}:
-        raise ValueError("accelerator must be either 't4' or 'l4'")
+    if accelerator_name not in ACCELERATOR_LABELS:
+        supported = ", ".join(f"'{name}'" for name in ACCELERATOR_LABELS)
+        raise ValueError(f"accelerator must be one of: {supported}")
+
+    accelerator_label = ACCELERATOR_LABELS[accelerator_name]
 
     log("Modal training launcher started", "step")
-    log(f"Requested accelerator: {accelerator_name.upper()}", "info")
+    log(f"Requested accelerator: {accelerator_label}", "info")
     log(
         "Requested run: "
         f"run_name={run_name}, epochs={epochs}, batch_size={batch_size}, "
@@ -309,8 +347,13 @@ def main(
     if sync_dataset:
         sync_dataset_volume()
 
-    trainer = train_l4 if accelerator_name == "l4" else train_t4
-    log(f"Submitting remote training job on {accelerator_name.upper()}", "step")
+    trainer_map = {
+        "t4": train_t4,
+        "l4": train_l4,
+        "b200": train_b200,
+    }
+    trainer = trainer_map[accelerator_name]
+    log(f"Submitting remote training job on {accelerator_label}", "step")
     summary = trainer.remote(
         run_name=run_name,
         epochs=epochs,

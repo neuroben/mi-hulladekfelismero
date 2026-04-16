@@ -1,0 +1,23 @@
+Using device: cuda
+Model loaded from: /mnt/models/kaggle_howa_b200_run1/best_model.pth
+
+Test accuracy: 0.8090 (805/995)
+
+Confusion matrix (rows = true, cols = predicted):
+            glass     metal     paper   plastic
+   glass      195        18         5        29
+   metal       27       172        10        17
+   paper        7         3       234        19
+ plastic       27        15        13       204
+
+Classification report:
+              precision    recall  f1-score   support
+
+       glass       0.76      0.79      0.78       247
+       metal       0.83      0.76      0.79       226
+       paper       0.89      0.89      0.89       263
+     plastic       0.76      0.79      0.77       259
+
+    accuracy                           0.81       995
+   macro avg       0.81      0.81      0.81       995
+weighted avg       0.81      0.81      0.81       995
