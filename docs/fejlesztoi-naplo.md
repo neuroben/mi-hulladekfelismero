@@ -58,12 +58,14 @@ A jelenlegi legfontosabb futásom:
 
 ## Milyen eredményt értem el
 
-A mostani, kibővített adathalmazon futtatott Modalos tanításnál ezeket az eredményeket értem el:
+A HOWA-bővítés utáni Modalos tanításnál ezeket az eredményeket értem el:
 
 - legjobb validációs pontosság: `0.8059`
 - tesztpontosság: `0.8161`
 
 Az osztályonkénti eredmények közül a `paper` kategória teljesített a legerősebben, míg az `glass` és `plastic` között még most is látszik némi átfedés, ami a valós tárgyformák és az áttetsző anyagok miatt érthető. A modell tehát már használható, de még nem tekintem késznek vagy ipari szintűnek.
+
+A Kaggle Garbage Classification V2 képeinek hozzáadása után a dataset még tovább bővült, de erre a véglegesített, nagyobb adathalmazra új tréninget még nem futtattam. Emiatt a jelenleg dokumentált pontossági értékek a HOWA-val kibővített állapothoz tartoznak, nem a legfrissebb, `14528` képes verzióhoz.
 
 ## Milyen GUI készült hozzá
 
