@@ -1,73 +1,136 @@
-# mi-hulladekfelismero - Waste Classifier
+# mi-hulladekfelismero
 
-University assignment project for multi-class waste recognition with transfer
-learning in PyTorch.
+Waste classification project built with PyTorch, Gradio, and Modal.
 
-The model classifies four categories:
+The current model predicts four classes:
 
-| Index | Class |
-|-------|-------|
-| 0 | glass |
-| 1 | metal |
-| 2 | paper |
-| 3 | plastic |
+- `glass`
+- `metal`
+- `paper`
+- `plastic`
 
-The effective class order is determined by the alphabetical order of the class
-folder names used by `torchvision.datasets.ImageFolder`.
-
-## Repository map
+## Project layout
 
 ```text
 mi-hulladekfelismero/
-|-- app/
-|   `-- app.py                # Gradio web UI for image upload and prediction
-|-- dataset/
-|   |-- README.md             # Image placement guide and recommended counts
-|   |-- train/
-|   |   |-- glass/
-|   |   |-- metal/
-|   |   |-- paper/
-|   |   `-- plastic/
-|   |-- val/
-|   |   |-- glass/
-|   |   |-- metal/
-|   |   |-- paper/
-|   |   `-- plastic/
-|   `-- test/
-|       |-- glass/
-|       |-- metal/
-|       |-- paper/
-|       `-- plastic/
-|-- models/                   # Saved checkpoints, e.g. best_model.pth
-|-- notebooks/                # Experiments / exploration
+|-- app/                         # legacy GUI entrypoint
+|-- dataset/                     # versioned training, validation, and test images
+|-- docs/
+|   `-- fejlesztoi-naplo.md      # Hungarian first-person project write-up
+|-- models/                      # saved checkpoints and run artifacts
+|-- notebooks/                   # experiments
+|-- scripts/                     # recommended CLI entrypoints
 |-- src/
-|   |-- check_dataset.py      # Validates dataset folders and counts images
-|   |-- data.py               # ImageFolder + transforms + DataLoaders
-|   |-- evaluate.py           # Test-set evaluation and metrics
-|   |-- model.py              # ResNet18 model builder / loader
-|   |-- predict.py            # Single-image inference
-|   |-- train.py              # Training loop
-|   `-- utils.py              # Device, seed, and accuracy helpers
-|-- .gitignore
+|   |-- waste_classifier/        # shared application package
+|   `-- *.py                     # compatibility wrappers for old commands
+|-- modal_train.py               # legacy Modal entrypoint
+|-- pyproject.toml
 |-- README.md
 `-- requirements.txt
 ```
 
-## How the application works
+## Branch setup
 
-1. `src/data.py` loads images from `dataset/train`, `dataset/val`, and
-   `dataset/test` using `ImageFolder`.
-2. `src/train.py` trains a ResNet18-based classifier and saves the best model to
-   `models/best_model.pth`.
-3. `src/evaluate.py` loads that checkpoint and reports test accuracy,
-   confusion matrix, and per-class metrics.
-4. `src/predict.py` runs inference on a single image.
-5. `app/app.py` exposes the trained model through a simple Gradio web app.
+The repository is intended to be used with two branches:
 
-## Dataset layout
+- `main`: application code, documentation, and trained model artifacts, but no full dataset images.
+- `main-with-dataset`: everything from `main`, plus the versioned dataset images for training and evaluation.
 
-Training, validation, and test images must live under `dataset/` with one
-sub-folder per class:
+If someone only wants to try the app with the trained model, `main` is enough.
+If someone wants to retrain or inspect the full dataset locally, they should use `main-with-dataset`.
+
+## Quick start: only try the model
+
+Clone the lightweight branch, install dependencies, and launch the GUI:
+
+```powershell
+git clone -b main <REPO_URL>
+cd mi-hulladekfelismero
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python scripts\app.py --model_path models\howa_modal_run1\best_model.pth
+```
+
+Then open the local Gradio URL printed in the terminal.
+
+If you only want a quick CLI prediction instead of the GUI:
+
+```powershell
+python scripts\predict.py --model_path models\howa_modal_run1\best_model.pth --image_path path\to\image.jpg
+```
+
+## Full setup: code + dataset for training
+
+If you want the full training dataset as well:
+
+```powershell
+git clone -b main-with-dataset <REPO_URL>
+cd mi-hulladekfelismero
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+python scripts\check_dataset.py --data_dir dataset
+```
+
+If you already cloned `main`, switch like this after fetching:
+
+```powershell
+git fetch origin
+git checkout main-with-dataset
+```
+
+## Recommended commands
+
+Create the virtual environment and install dependencies:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+Check the dataset:
+
+```powershell
+python scripts\check_dataset.py --data_dir dataset
+```
+
+Train locally:
+
+```powershell
+python scripts\train.py --data_dir dataset --epochs 10 --batch_size 32 --num_workers 0 --checkpoint_dir models\run1
+```
+
+Evaluate a checkpoint:
+
+```powershell
+python scripts\evaluate.py --model_path models\run1\best_model.pth --data_dir dataset --batch_size 32 --num_workers 0
+```
+
+Predict a single image:
+
+```powershell
+python scripts\predict.py --model_path models\run1\best_model.pth --image_path dataset\test\glass\glass101.jpg
+```
+
+Launch the GUI:
+
+```powershell
+python scripts\app.py --model_path models\run1\best_model.pth
+```
+
+Run Modal training:
+
+```powershell
+python -m modal run modal_train.py --accelerator l4 --epochs 6 --batch-size 64 --run-name howa_modal_run1
+```
+
+Legacy commands such as `python src\train.py` and `python app\app.py` still work.
+
+## Dataset
+
+The repository uses an `ImageFolder` layout:
 
 ```text
 dataset/
@@ -88,58 +151,23 @@ dataset/
     plastic/
 ```
 
-See [dataset/README.md](dataset/README.md) for practical guidance on what images
-to place in each folder and how many you should aim for.
+See [dataset/README.md](dataset/README.md) for placement guidance.
 
-## Installation
+The current combined dataset in `main-with-dataset` contains `14528` images in total.
+This includes the earlier dataset sources, the HOWA import, and an additional Kaggle Garbage Classification V2 import split into the existing `train / val / test` structure.
 
-```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
+## Current best run
 
-## Usage
+The strongest tracked result in the project came from a Modal L4 run with the HOWA-augmented dataset:
 
-Validate the dataset before training:
+- best validation accuracy: `0.8059`
+- test accuracy: `0.8161`
 
-```bash
-python src/check_dataset.py --data_dir dataset
-```
+Artifacts are stored in [models/howa_modal_run1](models/howa_modal_run1).
 
-Train the model:
+## Notes
 
-```bash
-python src/train.py --data_dir dataset --epochs 15 --batch_size 32
-```
-
-Evaluate the best checkpoint:
-
-```bash
-python src/evaluate.py --model_path models/best_model.pth --data_dir dataset
-```
-
-Predict a single image:
-
-```bash
-python src/predict.py --model_path models/best_model.pth --image_path path/to/image.jpg
-```
-
-Launch the Gradio app:
-
-```bash
-python app/app.py --model_path models/best_model.pth
-```
-
-Then open [http://localhost:7860](http://localhost:7860).
-
-## Transfer learning strategy
-
-1. Stage 1 (default): train only the new classification head with the backbone
-   frozen.
-2. Stage 2: pass `--unfreeze_all` to fine-tune the full network once the head
-   starts converging.
-
-## License
-
-MIT
+- `scripts/` contains the recommended user-facing entrypoints.
+- `src/waste_classifier/` contains the shared implementation.
+- `src/*.py`, `app/app.py`, and `modal_train.py` remain as compatibility wrappers.
+- The project was refactored into a cleaner package structure after the initial implementation phase.

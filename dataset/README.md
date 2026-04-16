@@ -95,7 +95,7 @@ dataset/test/plastic/container_005.jpg
 Run this command:
 
 ```bash
-python src/check_dataset.py --data_dir dataset
+python scripts/check_dataset.py --data_dir dataset
 ```
 
 It will tell you:
@@ -104,3 +104,5 @@ It will tell you:
 - how many images are present in each split and class,
 - whether some class folders are empty,
 - and whether the dataset looks badly imbalanced.
+
+The legacy command `python src/check_dataset.py --data_dir dataset` still works.

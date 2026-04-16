@@ -1,0 +1,12 @@
+{
+  "accelerator": "l4",
+  "run_name": "howa_modal_run1",
+  "epochs": 6,
+  "batch_size": 64,
+  "lr": 0.001,
+  "num_workers": 4,
+  "unfreeze_all": false,
+  "checkpoint_volume_path": "howa_modal_run1/best_model.pth",
+  "evaluation_volume_path": "howa_modal_run1/evaluation.txt",
+  "train_log_volume_path": "howa_modal_run1/train.log"
+}

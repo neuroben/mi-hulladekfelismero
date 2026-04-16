@@ -1,0 +1,24 @@
+Using device: cuda
+Model loaded from: /mnt/models/howa_modal_run1/best_model.pth
+
+Test accuracy: 0.8161 (812/995)
+
+Confusion matrix (rows = true, cols = predicted):
+            glass     metal     paper   plastic
+   glass      196        21         9        21
+   metal       21       182        13        10
+   paper        5         4       242        12
+ plastic       32        16        19       192
+
+Classification report:
+              precision    recall  f1-score   support
+
+       glass       0.77      0.79      0.78       247
+       metal       0.82      0.81      0.81       226
+       paper       0.86      0.92      0.89       263
+     plastic       0.82      0.74      0.78       259
+
+    accuracy                           0.82       995
+   macro avg       0.81      0.82      0.81       995
+weighted avg       0.82      0.82      0.82       995
+
