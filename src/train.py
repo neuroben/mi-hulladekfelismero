@@ -164,7 +164,7 @@ def main() -> None:
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             torch.save(model.state_dict(), best_checkpoint)
-            print(f"  ✓ Best model saved (val_acc={val_acc:.4f})")
+            print(f"  [OK] Best model saved (val_acc={val_acc:.4f})")
 
     print(f"\nTraining complete. Best val accuracy: {best_val_acc:.4f}")
     print(f"Best checkpoint saved to: {best_checkpoint}")

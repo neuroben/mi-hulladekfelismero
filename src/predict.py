@@ -113,7 +113,7 @@ def main() -> None:
     print(f"Predicted class : {predicted_class}")
     print("Class probabilities:")
     for cls, prob in sorted(prob_dict.items(), key=lambda x: -x[1]):
-        bar = "█" * int(prob * 30)
+        bar = "#" * int(prob * 30)
         print(f"  {cls:>10}: {prob:.4f}  {bar}")
 
 

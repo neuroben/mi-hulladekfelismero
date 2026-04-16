@@ -59,14 +59,14 @@ def build_interface(model: torch.nn.Module, class_names: list[str], device: torc
             gr.Textbox(label="Predicted class"),
             gr.Label(num_top_classes=len(class_names), label="Class probabilities"),
         ],
-        title="🗑️ Waste Classifier",
+        title="Waste Classifier",
         description=(
             "Upload an image of waste and the model will predict whether it belongs to: "
             + ", ".join(class_names)
             + "."
         ),
         examples=[],   # Add example image paths here if available
-        allow_flagging="never",
+        flagging_mode="never",
     )
     return interface
 
