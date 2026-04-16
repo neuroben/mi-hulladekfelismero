@@ -1,0 +1,39 @@
+# Python bytecode / cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+
+# Model checkpoints (keep the directory, ignore weight files)
+models/*.pth
+models/*.pt
+
+# Dataset images (keep folder structure via .gitkeep)
+dataset/train/*/
+dataset/val/*/
+dataset/test/*/
+
+# OS artefacts
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+
+# Logs
+*.log
+runs/
